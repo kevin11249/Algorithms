@@ -3,6 +3,7 @@
 
 #include "Graph.h"
 #include "./Container/Stack.h"
+#include "./Container/Queue.h"
 
 class BreadthFirstPaths
 {
@@ -14,7 +15,7 @@ public:
     Stack<int> pathTo(int v) const;
 
 private:
-    void bfs(const Graph &G, unsigned v);
+    void bfs(const Graph &G, unsigned s);
 
 private:
     std::vector<bool> marked;
@@ -32,13 +33,20 @@ BreadthFirstPaths::BreadthFirstPaths(const Graph &G, unsigned s)
 
 void BreadthFirstPaths::bfs(const Graph &G, unsigned s)
 {
-    // marked[v] = true;
-    // for (int w : G.getBag(v))
-    //     if (!marked[w])
-    //     {
-    //         edgeTo[w] = v;
-    //         dfs(G, w);
-    //     }
+    Queue<int> queue{};
+    marked[s] = true;
+    queue.enqueue(s);
+    while (!queue.isEmpty())
+    {
+        int v = queue.dequeue();
+        for (int w : G.getBag(v))
+            if (!marked[w])
+            {
+                edgeTo[w] = v;
+                marked[w] = true;
+                queue.enqueue(w);
+            }
+    }
 }
 
 inline bool BreadthFirstPaths::hasPathTo(int v) const
