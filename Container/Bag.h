@@ -1,23 +1,79 @@
 #pragma once
 
-template <typename T>
+template <class T>
 class Bag
 {
-    struct Node
-    {
-        T data;
-        Node *next;
-    };
-
 public:
-    void add(T data)
+    Bag() = default;
+
+    void add(T item)
     {
-        Node *old_first = first;
-        first = new Node{data, old_first};
-        N++;
+        Node *oldFirst = first;
+        first = new Node{item, oldFirst};
     }
 
 private:
-    Node *first{nullptr};
-    unsigned N{0};
+    struct Node
+    {
+        T item;
+        Node *next{nullptr};
+    };
+
+    Node *first {nullptr};
+
+public:
+    class Iterator
+    {
+        friend class Bag; 
+    public:
+        Iterator() = default;
+
+        bool operator==(const Iterator &iter) const
+        {
+            return current == iter.current;
+        }
+
+        bool operator!=(const Iterator &iter) const
+        {
+            return current != iter.current;
+        }
+
+        T &operator*() const
+        {
+            return current->item;
+        }
+
+        Iterator operator++(int) const
+        {
+            Iterator temp = *this;
+            current = current->next;
+            return temp;
+        }
+
+        Iterator &operator++()
+        {
+            current = current->next;
+            return *this;
+        }
+
+        bool atEnd() const
+        {
+            return current == nullptr;
+        }
+
+    private:
+        Iterator(Node *p) : current(p) {} //上面声明了友元，所以才能调用这个构造函数
+
+        Node *current {nullptr};
+    };
+
+    Iterator begin()
+    {
+        return Iterator(first);
+    }
+
+    Iterator end()
+    {
+        return Iterator(nullptr);
+    }
 };
